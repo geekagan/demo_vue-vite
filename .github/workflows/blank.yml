@@ -1,0 +1,27 @@
+name: My First Workflow # Workflow 的名字
+
+# 定义触发事件：当代码被推送到 main 分支时触发
+on:
+  push:
+    branches: [ "main" ]
+
+# 开始定义 Jobs
+jobs:
+  # 定义一个 Job，ID 为 `my-first-job`
+  my-first-job:
+    # 给 Job 起个名字
+    name: Say Hello
+    # 这个 Job 运行在最新版本的 Ubuntu 虚拟机上
+    runs-on: ubuntu-latest
+
+    # 定义 Job 的步骤
+    steps:
+      # 步骤1：使用一个社区 Action 来拉取仓库代码
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 步骤2：运行一条简单的 shell 命令
+      - name: Run a greeting
+        run: |
+          echo "Hello, GitHub Actions!"
+          echo "This is running on a $RUNNER_OS machine."
