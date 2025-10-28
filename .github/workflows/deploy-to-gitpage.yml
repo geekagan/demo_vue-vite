@@ -7,7 +7,7 @@ on:
 
 jobs:
   pnpm-build:
-    name: 使用 pnpm 构建项目1
+    name: 使用 pnpm 构建项目
     runs-on: ubuntu-latest
 
     steps:
@@ -18,13 +18,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-          cache: 'npm'
-
-      - name: 安装 pnpm
-        run: npm install -g pnpm
+          cache: 'pnpm'
 
       - name: 安装依赖
-        run: pnpm install
-
-      - name: 构建项目
-        run: pnpm build
+        run: npm install -g pnpm & pnpm -v
