@@ -1,30 +1,32 @@
-name: Vue3+Vite项目打包部署到 git page
+# 工作流名称（在 GitHub Actions 面板中显示）
+name: 构建并部署到 GitHub Pages
 
+# 触发条件：当代码推送到 main 分支时自动执行（可修改为你的主分支，如 master）
 on:
   push:
-    branches:
-      - main  # 当推送到 main 分支时触发
+    branches: [ main ]
 
+# 工作流任务定义
 jobs:
-  pnpm-build:
-    name: 使用 pnpm 构建项目
+  # 任务1：构建项目（生成 dist 产物）
+  build:
+    # 运行环境：选择最新的 Ubuntu 系统（稳定且常用）
     runs-on: ubuntu-latest
-
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v5
+      # 步骤1：拉取当前仓库的代码到运行环境
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4  # 使用官方的代码拉取 Action，v4 是最新稳定版
 
-      - name: 设置 Node.js 环境
-        uses: actions/setup-node@v6
+      # 步骤2：安装 Node.js 环境（需与项目本地开发的 Node 版本匹配，推荐 18+）
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'pnpm'
+          node-version: '18'  # 指定 Node 版本（可改为 20 等，需与项目兼容）
+          cache: 'pnpm'       # 缓存 pnpm 依赖，加速下次构建
 
+      # 步骤3：安装 pnpm 包管理器（GitHub 环境默认不含 pnpm，需手动安装）
       - name: 安装 pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v3  # pnpm 官方提供的安装 Action，v3 稳定
         with:
-          version: '10'
-          run_install: false
-    
-      - name: 安装依赖
-        run: pnpm -v
+          version: '8'  # 指定 pnpm 版本（可改为 9 等，需与项目兼容）
+          run_install: false  # 暂不自动安装依赖，后续手动执行
