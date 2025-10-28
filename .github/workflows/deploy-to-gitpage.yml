@@ -21,12 +21,12 @@ jobs:
       - name: 安装 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # 指定 Node 版本（可改为 20 等，需与项目兼容）
+          node-version: 20  # 指定 Node 版本（可改为 20 等，需与项目兼容）
           cache: 'pnpm'       # 缓存 pnpm 依赖，加速下次构建
 
       # 步骤3：安装 pnpm 包管理器（GitHub 环境默认不含 pnpm，需手动安装）
       - name: 安装 pnpm
         uses: pnpm/action-setup@v3  # pnpm 官方提供的安装 Action，v3 稳定
         with:
-          version: '8'  # 指定 pnpm 版本（可改为 9 等，需与项目兼容）
+          version: 10  # 指定 pnpm 版本（可改为 9 等，需与项目兼容）
           run_install: false  # 暂不自动安装依赖，后续手动执行
