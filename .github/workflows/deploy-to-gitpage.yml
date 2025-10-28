@@ -7,7 +7,7 @@ on:
 
 jobs:
   pnpm-build:
-    name: 使用 pnpm 构建项目
+    name: 使用 pnpm 构建项目1
     runs-on: ubuntu-latest
 
     steps:
