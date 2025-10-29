@@ -42,7 +42,7 @@ jobs:
       - name: 保存构建产物
         uses: actions/upload-artifact@v4  # 上传 dist 到 GitHub 临时存储
         with:
-          name: dist-files  # 产物压缩包名称（后续部署时需对应）
+          name: github-pages  # 工件名必须是 "github-pages"，不可修改
           path: ./dist      # 要上传的目录路径（Vite 构建默认输出到 dist）
 
   # 任务2：部署构建产物到 GitHub Pages（依赖 build 任务执行完成）
