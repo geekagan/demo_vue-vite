@@ -1,0 +1,34 @@
+name: 测试 Deploy from a branch - to github page
+on: [push]
+permissions:
+  contents: write
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: check environment
+        run: |
+          echo "deploy to ${{ github.ref }}"
+          node -v
+          npm -v
+
+    # 步骤3：安装 pnpm 包管理器（GitHub 环境默认不含 pnpm，需手动安装）
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v3  # pnpm 官方提供的安装 Action，v3 稳定
+        with:
+          version: 10  # 指定 pnpm 版本（可改为 9 等，需与项目兼容）
+          run_install: false  # 暂不自动安装依赖，后续手动执行
+
+      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+        run: |
+          pnpm install
+          pnpm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist # The folder the action should deploy.

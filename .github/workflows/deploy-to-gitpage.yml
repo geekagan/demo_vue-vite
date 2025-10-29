@@ -1,4 +1,4 @@
-name: JamesIves/github-pages-deploy-action@v4
+name: 测试 Deploy from a branch - to github page
 on: [push]
 permissions:
   contents: write
