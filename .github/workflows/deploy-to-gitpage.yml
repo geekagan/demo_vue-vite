@@ -44,6 +44,7 @@ jobs:
         with:
           name: github-pages  # 工件名必须是 "github-pages"，不可修改
           path: ./dist      # 要上传的目录路径（Vite 构建默认输出到 dist）
+          overwrite: true  # 覆盖同名文件
 
   # 任务2：部署构建产物到 GitHub Pages（依赖 build 任务执行完成）
   deploy:
