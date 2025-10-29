@@ -63,7 +63,7 @@ jobs:
         uses: actions/download-artifact@v4  # 从临时存储下载 dist
         with:
           name: github-pages  # 需与 build 任务中上传的产物名称一致
-          path: ./dist      # 下载到当前环境的 dist 目录
+          path: ./dist           # 下载到当前环境的 dist 目录
 
       # 步骤2：部署 dist 目录到 GitHub Pages
       - name: 部署到 GitHub Pages
