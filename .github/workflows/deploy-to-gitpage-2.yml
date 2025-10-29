@@ -56,14 +56,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}  # 部署后生成访问链接
     
-    steps:
-      # 步骤1：下载之前保存的构建产物（dist 目录）
-      - name: 下载构建产物
-        uses: actions/download-artifact@v5  # 从临时存储下载 dist
-        with:
-          name: github-pages  # 需与 build 任务中上传的产物名称一致
-          path: ./dist           # 下载到当前环境的 dist 目录
-      
+    steps:      
       - name: 部署到 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4  # GitHub 官方部署 Action（无需手动处理分支）
