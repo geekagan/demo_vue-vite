@@ -42,49 +42,9 @@ jobs:
       # 步骤6：保存构建产物（作为后续部署任务的输入）
       - name: 保存构建产物
         id: deployment
-        uses: actions/upload-artifact@v4  # 上传 dist 到 GitHub 临时存储
+        uses: actions/upload-pages-artifact@v3  # 上传 dist 到 GitHub 临时存储
         with:
-          name: github-pages  # 工件名必须是 "github-pages"，不可修改
-          path: ./dist      # 要上传的目录路径（Vite 构建默认输出到 dist）
-          overwrite: true  # 覆盖同名文件
-      
-      # 步骤7：在构建任务末尾添加验证步骤
-      - name: 验证构建产物
-        run: |
-          echo "构建产物内容："
-          ls -la dist/
-          echo "文件总大小："
-          du -sh dist/
-      
-      # 新增步骤：检查构建产物中的链接和大小
-      - name: 检查构建产物（链接+大小）
-        run: |
-          # 1. 进入构建目录（根据你的实际目录修改，如 build、_site, dist 等）
-          cd dist
-          # 2. 检查符号链接，若存在则报错终止
-          echo "=== 检查符号链接 ==="
-          SYMLINKS=$(find . -type l)
-          if [ -n "$SYMLINKS" ]; then
-            echo "错误：发现符号链接，禁止部署："
-            echo "$SYMLINKS"
-            exit 1 # 终止工作流
-          fi
-          # 3. 检查硬链接（可选，需安装 coreutils）
-          echo "=== 检查硬链接 ==="
-          HARD_LINKS=$(find . -type f -links +1)
-          if [ -n "$HARD_LINKS" ]; then
-            echo "错误：发现硬链接，禁止部署："
-            echo "$HARD_LINKS"
-            exit 1
-          fi
-          # 4. 检查产物大小（单位：GB），超过 9GB 则警告（留 1GB 冗余）
-          echo "=== 检查产物大小 ==="
-          TOTAL_SIZE=$(du -sb . | awk '{print $1 / 1024 / 1024 / 1024}')
-          echo "当前产物总大小：$TOTAL_SIZE GB"
-          if (( $(echo "$TOTAL_SIZE > 9" | bc -l) )); then
-            echo "警告：产物大小超过 9GB，接近 10GB 限制，请清理冗余文件！"
-            # 若需严格限制，可改为 exit 1 终止部署
-          fi
+          path: dist/     # 要上传的目录路径（Vite 构建默认输出到 dist）
 
   # 任务2：部署构建产物到 GitHub Pages（依赖 build 任务执行完成）
   deploy:
@@ -98,23 +58,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}  # 部署后生成访问链接
 
     steps:
-      # 步骤1：下载之前保存的构建产物（dist 目录）
-      - name: 下载构建产物
-        uses: actions/download-artifact@v5  # 从临时存储下载 dist
-        with:
-          name: github-pages  # 需与 build 任务中上传的产物名称一致
-          path: ./dist           # 下载到当前环境的 dist 目录
-
-      - name: 验证下载产物
-        run: |
-          echo "构建产物内容："
-          ls -la dist/
-          echo "文件总大小："
-          du -sh dist/
-
       # 步骤2：部署 dist 目录到 GitHub Pages
       - name: 部署到 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4  # GitHub 官方部署 Action（无需手动处理分支）
-        with:
-          artifact_name: github-pages
