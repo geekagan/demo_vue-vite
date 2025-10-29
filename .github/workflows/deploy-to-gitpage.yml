@@ -43,8 +43,16 @@ jobs:
         uses: actions/upload-artifact@v4  # 上传 dist 到 GitHub 临时存储
         with:
           name: github-pages  # 工件名必须是 "github-pages"，不可修改
-          path: ./dist      # 要上传的目录路径（Vite 构建默认输出到 dist）
+          path: dist/      # 要上传的目录路径（Vite 构建默认输出到 dist）
           overwrite: true  # 覆盖同名文件
+      
+      # 在构建任务末尾添加验证步骤
+      - name: 验证构建产物
+        run: |
+          echo "构建产物内容："
+          ls -la dist/
+          echo "文件总大小："
+          du -sh dist/
 
   # 任务2：部署构建产物到 GitHub Pages（依赖 build 任务执行完成）
   deploy:
@@ -63,7 +71,7 @@ jobs:
         uses: actions/download-artifact@v4  # 从临时存储下载 dist
         with:
           name: github-pages  # 需与 build 任务中上传的产物名称一致
-          path: ./dist           # 下载到当前环境的 dist 目录
+          path: dist/           # 下载到当前环境的 dist 目录
 
       # 步骤2：部署 dist 目录到 GitHub Pages
       - name: 部署到 GitHub Pages
