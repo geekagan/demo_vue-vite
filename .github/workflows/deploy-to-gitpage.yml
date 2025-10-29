@@ -40,12 +40,12 @@ jobs:
         run: pnpm run build  # 执行 Vite 构建命令，生成静态产物到 dist
       
       # 步骤6：保存构建产物（作为后续部署任务的输入）
-      # - name: 保存构建产物
-      #   uses: actions/upload-artifact@v4  # 上传 dist 到 GitHub 临时存储
-      #   with:
-      #     name: github-pages  # 工件名必须是 "github-pages"，不可修改
-      #     path: dist/      # 要上传的目录路径（Vite 构建默认输出到 dist）
-      #     overwrite: true  # 覆盖同名文件
+      - name: 保存构建产物
+        uses: actions/upload-artifact@v4  # 上传 dist 到 GitHub 临时存储
+        with:
+          name: github-pages  # 工件名必须是 "github-pages"，不可修改
+          path: dist/      # 要上传的目录路径（Vite 构建默认输出到 dist）
+          overwrite: true  # 覆盖同名文件
       
       # 步骤7：在构建任务末尾添加验证步骤
       - name: 验证构建产物
