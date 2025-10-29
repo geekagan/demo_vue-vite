@@ -37,12 +37,13 @@ jobs:
           # 将你的网页文件或其他静态资源复制到dist目录中，可根据实际情况修改命令
           # cp -r [你的source files] /dist
           tar -czvf github-pages.tar.gz -C dist . # 创建符合要求的tar.gz归档文件
+          ls -al
       
       - name: 上传构建产物
         uses: actions/upload-artifact@v4  # 上传 dist 到 GitHub 临时存储
         with:
           name: github-pages  # 工件名必须是 "github-pages"，不可修改
-          path: github-pages.tar.gz      # 要上传的目录路径（Vite 构建默认输出到 dist）
+          path: ./github-pages.tar.gz      # 要上传的目录路径（Vite 构建默认输出到 dist）
           overwrite: true  # 覆盖同名文件
 
   deploy:
