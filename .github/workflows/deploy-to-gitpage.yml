@@ -44,3 +44,27 @@ jobs:
         with:
           name: dist-files  # 产物压缩包名称（后续部署时需对应）
           path: ./dist      # 要上传的目录路径（Vite 构建默认输出到 dist）
+
+  # 任务2：部署构建产物到 GitHub Pages（依赖 build 任务执行完成）
+  deploy:
+    needs: build  # 明确依赖 build 任务，确保构建完成后再部署
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write        # 授予操作 GitHub Pages 的权限
+      id-token: write     # 用于身份验证（新版 GitHub Pages 必需）
+    environment: 
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}  # 部署后生成访问链接
+
+    steps:
+      # 步骤1：下载之前保存的构建产物（dist 目录）
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4  # 从临时存储下载 dist
+        with:
+          name: dist-files  # 需与 build 任务中上传的产物名称一致
+          path: ./dist      # 下载到当前环境的 dist 目录
+
+      # 步骤2：部署 dist 目录到 GitHub Pages
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4  # GitHub 官方部署 Action（无需手动处理分支）
