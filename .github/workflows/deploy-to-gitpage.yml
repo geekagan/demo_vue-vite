@@ -1,34 +1,64 @@
-name: 测试 Deploy from a branch - to github page
-on: [push]
-permissions:
-  contents: write
+# 工作流名称（在 GitHub Actions 面板中显示）
+name: 测试 Deploy with GitHub Actions - to gitpage
+
+# 触发条件：当代码推送到 main 分支时自动执行（可修改为你的主分支，如 master）
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# 工作流任务定义
 jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+  # 任务1：构建项目（生成 dist 产物）
+  build:
+    # 运行环境：选择最新的 Ubuntu 系统（稳定且常用）
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
+      # 步骤1：拉取当前仓库的代码到运行环境
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4  # 使用官方的代码拉取 Action，v4 是最新稳定版
 
-      - name: check environment
-        run: |
-          echo "deploy to ${{ github.ref }}"
-          node -v
-          npm -v
+      # 步骤2：安装 Node.js 环境（需与项目本地开发的 Node 版本匹配，推荐 18+）
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20  # 指定 Node 版本（可改为 20 等，需与项目兼容）
 
-    # 步骤3：安装 pnpm 包管理器（GitHub 环境默认不含 pnpm，需手动安装）
+      # 步骤3：安装 pnpm 包管理器（GitHub 环境默认不含 pnpm，需手动安装）
       - name: 安装 pnpm
         uses: pnpm/action-setup@v3  # pnpm 官方提供的安装 Action，v3 稳定
         with:
           version: 10  # 指定 pnpm 版本（可改为 9 等，需与项目兼容）
           run_install: false  # 暂不自动安装依赖，后续手动执行
 
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          pnpm install
-          pnpm run build
+      # 步骤4：安装项目依赖（使用 pnpm）
+      - name: 安装项目依赖
+        run: pnpm install  # 若有私有源，可添加 --registry 配置
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      # 步骤5：构建项目（生成 dist 目录，命令需与 package.json 中的 build 脚本一致）
+      - name: 构建项目
+        run: pnpm run build   # 执行 Vite 构建命令，生成静态产物到 dist
+      
+      # 步骤6：保存构建产物（作为后续部署任务的输入）
+      - name: 保存构建产物
+        id: deployment
+        uses: actions/upload-pages-artifact@v3  # 上传 dist 到 GitHub 临时存储
         with:
-          folder: dist # The folder the action should deploy.
+          path: dist/     # 要上传的目录路径（Vite 构建默认输出到 dist）
+
+  # 任务2：部署构建产物到 GitHub Pages（依赖 build 任务执行完成）
+  deploy:
+    needs: build          # 明确依赖 build 任务，确保构建完成后再部署
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write        # 授予操作 GitHub Pages 的权限
+      id-token: write     # 用于身份验证（新版 GitHub Pages 必需）
+    environment: 
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}  # 部署后生成访问链接
+
+    steps:
+      # 步骤2：部署 dist 目录到 GitHub Pages
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4  # GitHub 官方部署 Action（无需手动处理分支）
