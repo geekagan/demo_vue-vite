@@ -4,7 +4,7 @@ name: 测试 Deploy with GitHub Actions - to gitpage
 # 触发条件：当代码推送到 main 分支时自动执行（可修改为你的主分支，如 master）
 on:
   push:
-    branches: [ main ]
+    branches: [ github-action-deploy ]
   workflow_dispatch:
 
 # 工作流任务定义
