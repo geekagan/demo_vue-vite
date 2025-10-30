@@ -41,7 +41,6 @@ jobs:
       
       # 步骤6：保存构建产物（作为后续部署任务的输入）
       - name: 保存构建产物
-        id: deployment
         uses: actions/upload-pages-artifact@v3  # 上传 dist 到 GitHub 临时存储
         with:
           path: dist/     # 要上传的目录路径（Vite 构建默认输出到 dist）
